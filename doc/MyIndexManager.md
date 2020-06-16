@@ -7,6 +7,15 @@ Index Manager负责 **B+树索引**的实现，实现B+树的创建和删除(由
 B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点大小与索引键大小计算得到。
 
 # 模块接口
+
+## init_index()
+
+初始化，从文件夹中读入所有json文件并将其转化为树形式
+
+## finalize_index()
+
+将所有树存储为json文件，关闭文件
+
 ## insert_entry(table_name,index_name, key, data)
 
 根据索引在一个表格中添加节点
