@@ -1,0 +1,1 @@
+{"test5": {"primary": 0, "columns": {"id": ["int", "0", ["id"], 1], "cnmae": ["char", "10", [], 1], "grade": ["int", "0", [], 0]}}, "test": {"primary": 0, "columns": {"id": ["int", "0", ["id"], 1], "cnmae": ["char", "10", [], 1], "grade": ["int", "0", [], 0]}}}

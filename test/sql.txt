@@ -1,0 +1,4 @@
+cd /Users/ghostcat/Documents/GitHub/minisql-hsw/src 
+Python3 interpreter.py
+create table test(id int unique,cnmae char(10) unique,grade int,primary key(id));
+insert into test values(1,'JOJO',90);
