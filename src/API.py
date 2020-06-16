@@ -97,4 +97,5 @@ def select(table,condition):
     length=catalog.get_length(table)
     index_name=catalog.get_column_with_index(table)
     where=index.select_from_table(table,clause,index_name)
+    record.select_record(table,attr_list,clause,where,length)
     catalog.finalize()
