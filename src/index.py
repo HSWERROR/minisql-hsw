@@ -344,14 +344,14 @@ def finalize():
 		fp[name].write(json.dumps(turn_tree_into_json(tree_root[name])))
 		fp[name].close()
 
-# create a new table
-def create_table(table_name,primary_key):
-	fp[table_name+'_'+primary_key] = open(path+table_name+'_'+primary_key+'.ind','a+')
-	fp[table_name+'_'+primary_key].write('{"is_leaf":true,"sons":[],"keys":[]}')
-	tree_root[table_name+'_'+primary_key]=load_tree_from_json(json.loads('{"is_leaf":true,"sons":[],"keys":[]}'))
+# create a new table with a unique key
+def create_table(table_name,unique_key):
+	fp[table_name+'_'+unique_key] = open(path+table_name+'_'+unique_key+'.ind','a+')
+	fp[table_name+'_'+unique_key].write('{"is_leaf":true,"sons":[],"keys":[]}')
+	tree_root[table_name+'_'+unique_key]=load_tree_from_json(json.loads('{"is_leaf":true,"sons":[],"keys":[]}'))
 	global prev 
 	prev = None
-	maintain_left_right_pointer(tree_root[table_name+'_'+primary_key])
+	maintain_left_right_pointer(tree_root[table_name+'_'+unique_key])
 
 # delete a table and all its index
 def delete_table(table_name):
