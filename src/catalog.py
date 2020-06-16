@@ -3,7 +3,7 @@ import os
 import index
 
 
-path = '../dbFile/Catalog/'
+path = './'
 
 fp = None
 tablelist = None
@@ -146,8 +146,7 @@ def check_type(tablename,input_list):
             if len(inp)>int(attribute[1]):
                 raise Exception(name + ' has maximum length '+ str(attribute[1])+'.')
             values.append(inp)
-        if attribute[4]==1:
-            index.check_unique(tablename,"Uni_"+name,inp)
+        index.check_unique(tablename,"Uni_"+name,inp)
     return values
 
 def create_index(tablename, indexname, columnname):
@@ -171,7 +170,7 @@ def delete_index(indexname):
 def get_length(tablename):
     return 255*len(tablelist[tablename]['columns'].keys())+1
 
-def exist_index(tablename,indexname,boolean):
+def exist_index(indexname,boolean):
     '''
     判断索引是否存在，若不存在/存在，则对应类型报错
     indexname:string类型，索引名称
