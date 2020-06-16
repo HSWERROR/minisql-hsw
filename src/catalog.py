@@ -3,7 +3,7 @@ import os
 import index
 
 
-path = '../dbFile/Catalog/'
+path = './'
 
 fp = None
 tablelist = None
@@ -171,7 +171,7 @@ def delete_index(indexname):
 def get_length(tablename):
     return 255*len(tablelist[tablename]['columns'].keys())+1
 
-def exist_index(tablename,indexname,boolean):
+def exist_index(indexname,boolean):
     '''
     判断索引是否存在，若不存在/存在，则对应类型报错
     indexname:string类型，索引名称
