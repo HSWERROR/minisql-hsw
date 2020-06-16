@@ -1,7 +1,7 @@
 import os
 import re
 import myBuffer
-path = './'
+path = '../dbFile/Record/'
 
 
 def create_table(tablename):

@@ -33,10 +33,9 @@ def create_table(name, attribute, PK):
         raise Exception('Primary key is not a unique attribute!')
     catalog.create_table(name,attribute,PK)
     record.create_table(name)
-    index.create_table(name,PK)
     for x in attribute:
-        if PK not in x and len(x)==5 and x[-1]==1:
-            index.create_index(name,'Uni_'+x[0],x[0])
+        if len(x)==5 and x[-1]==1:
+            index.create_table(name,'Uni_'+x[0])
     catalog.finalize()
 
 """创建索引"""

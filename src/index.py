@@ -3,7 +3,7 @@ import math
 import json
 import catalog
 
-path = './'
+path = '../dbFile/Index/'
 fp = {} # store all the files(containg B+ tree json form)  according to the table_name and index_name, separating by '_'
 tree_root = {} # store all the tree_root nodes according to table_name and index_name, separating by '_'
 root = None # store the current tree_root node
@@ -432,19 +432,22 @@ def delete_entries(keylist, table_name, index_name):
 
 # check if column with index satisfies unique constraint
 def check_unique(table_name, index_name, value):
-	check_root = tree_root[table_name + '_' + index_name]
-	TmpNode = check_root
-	while not TmpNode.is_leaf:
-		flag = False
-		for index, key in enumerate(TmpNode.keys):
-			if key>value:
-				TmpNode = TmpNode.sons[index]
-				flag = True
-				break
-		# if the given key is larger than any key, then in the last son	
-		if flag == False:
-			TmpNode = TmpNode.sons[-1]
-	for index,key in enumerate(TmpNode.keys):
-		if key == value:
-			raise Exception("Index Module : index '%s' does not satisfy "
-                                "unique constrains." % index_name)
+	if table_name + '_' + index_name in tree_root.keys():
+		check_root = tree_root[table_name + '_' + index_name]
+		TmpNode = check_root
+		while not TmpNode.is_leaf:
+			flag = False
+			for index, key in enumerate(TmpNode.keys):
+				if key>value:
+					TmpNode = TmpNode.sons[index]
+					flag = True
+					break
+			# if the given key is larger than any key, then in the last son	
+			if flag == False:
+				TmpNode = TmpNode.sons[-1]
+		for index,key in enumerate(TmpNode.keys):
+			if key == value:
+				raise Exception("Index Module : index '%s' does not satisfy "
+									"unique constrains." % index_name)
+	else:
+		raise Exception("Index Module : index '%s' does not exists. " % index_name)

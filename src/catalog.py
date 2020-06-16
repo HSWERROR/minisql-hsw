@@ -3,7 +3,7 @@ import os
 import index
 
 
-path = './'
+path = '../dbFile/Catalog/'
 
 fp = None
 tablelist = None
