@@ -41,7 +41,7 @@ def create_table(name, attribute, PK):
 """创建索引"""
 def create_index(tname,iname,iattr):
     catalog.init_catalog()
-    catalog.exist_index(tname,True)
+    catalog.exist_index(iname,True)
     index.create_index(tname,iname,iattr)
     catalog.create_index(tname,iname,iattr)
     catalog.finalize()
