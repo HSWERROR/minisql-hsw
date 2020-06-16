@@ -35,7 +35,7 @@ def create_table(name, attribute, PK):
     record.create_table(name)
     for x in attribute:
         if len(x)==5 and x[-1]==1:
-            index.create_table(name,'Uni_'+x[0])
+            index.create_table(name,x[0])
     catalog.finalize()
 
 """创建索引"""

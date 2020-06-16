@@ -324,7 +324,7 @@ def prtl(node):
 		prtl(node.left)
 
 # read in all the trees from json
-def init():
+def init_index():
 	file_list = os.listdir(path)
 	for file in file_list:
 		fp[file.rstrip('.ind')] = open(path+file,'a+')
@@ -335,7 +335,7 @@ def init():
 		maintain_left_right_pointer(tree_root[file.rstrip('.ind')])
 
 # store all the trees back to json
-def finalize():
+def finalize_index():
 	file_list = os.listdir(path)
 	for file in file_list:
 		name = file.rstrip('.ind') 
