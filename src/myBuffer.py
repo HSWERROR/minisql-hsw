@@ -35,7 +35,8 @@ def get_block(tablename, where, length):
         fp.seek(where)
         if len(buffer) == buffer_size:
             buffer.popitem(last=False)
-        buffer[tablename+'\0'+str(where)] = fp.read(length)
+        buffer[tablename + '\0' + str(where)] = fp.read(length)
+    return buffer[tablename+'\0'+str(where)]
 
 def create_table(tablename):
     p = open(path+tablename+'.rec','a+')

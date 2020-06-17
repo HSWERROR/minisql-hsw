@@ -1,8 +1,10 @@
 create table test(id int unique,cname char(10) unique,grade int,primary key(id));
 insert into test values(1,'JOJO',90);
 insert into test values(3,'Judy,100);
+insert into test values(4,'xcs',59);
 select * from test;
 select * from test where id = 1;
+select * from test where id = 3;
 select * from test where grade > 90;
 create index id2 on test ( id );
 Drop table test;
