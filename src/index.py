@@ -2,6 +2,9 @@ import os
 import math
 import json
 import catalog
+import sys
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 path = '../dbFile/Index/'
 fp = {} # store all the files(containg B+ tree json form)  according to the table_name and index_name, separating by '_'
