@@ -4,7 +4,7 @@ import collections
 
 buffer = collections.OrderedDict()
 buffer_size = 4096
-path = './dbFile/Record/'
+path = '../dbFile/Record/'
 
 def init():
     pass
@@ -24,6 +24,7 @@ def save_block(tablename, code):
         if len(buffer) == buffer_size:
             buffer.popitem(last=False)
         buffer[tablename+'\0'+str(fp.tell())] = code.encode(encoding='UTF-8',errors='strict')
+        print(buffer[tablename + '\0' + str(fp.tell())])
         fp.write(buffer[tablename+'\0'+str(fp.tell())])
         return fp.tell()
 
@@ -52,3 +53,8 @@ def change_valid_bit(tablename, loc):
         buffer[tablename+'\0'+str(loc)].join(lun).encode(encoding='UTF-8',errors='strict')
         fp.seek(loc)
         fp.write('0'.encode(encoding='UTF-8',errors='strict'))
+
+def truncate(tablename, where):
+    with open(path+tablename+'.rec','rb+') as fp:
+        fp.seek(where)
+        fp.truncate()

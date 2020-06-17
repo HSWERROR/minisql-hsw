@@ -35,6 +35,7 @@ import record
 
 """创建table"""
 def create_table(name, attribute, PK):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_table(name,True)
@@ -50,35 +51,50 @@ def create_table(name, attribute, PK):
             catalog.create_index(name,x[0],x[0])
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """创建索引"""
 def create_index(tname,iname,iattr):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_index(iname,True)
-    index.create_index(tname,iname,iattr)
     catalog.create_index(tname,iname,iattr)
+    res=record.create_index(tname,catalog.get_index_of_attribute(tname,iattr),catalog.get_type_of_attribute(tname,iattr),catalog.get_length(tname))
+    try:
+        index.create_index(tname,iname,res)
+    except Exception as e:
+        raise Exception('Entries sharing same key on the column that is creating index on!')
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """插入新tuple"""
 def insert(tname,values):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_table(tname,False)
     catalog.check_type(tname,values)
-    index_name=catalog.get_column_with_index(tname)
-    key=[]
-    for dex in index_name:
-        idx=catalog.get_index_of_attribute(tname,dex)
-        key.append(values[idx])
-        index.insert_entry(tname,dex,key,values)
-    record.insert(tname,values)
+    where=record.insert(tname,values)-catalog.get_length(tname)
+    for idx,key in enumerate(values):
+        if catalog.get_index_name_by_seq(tname,idx)!=[]:
+            for indexname in catalog.get_index_name_by_seq(tname, idx):
+                try:
+                    index.insert_entry(tname,indexname,eval(key),where)
+                except Exception as err:
+                    temp_list=catalog.get_index_name_by_seq(tname,idx)
+                    for index_del in temp_list[:temp_list.index(indexname)]:
+                        index.delete_entries([err],tname,index_del)
+                    record.truncate(tname,where)
+                    raise Exception('Insertion fails. Data with key: '+str(key)+' already exists.')
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """删除表"""
 def drop_table(tname):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_table(tname, False)
@@ -87,22 +103,56 @@ def drop_table(tname):
     record.delete_table(tname)
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """删除元组"""
 def delete_tuple(tname,condition):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_table(tname,False)
-   #clause=extract_condition(condition)
-    length=catalog.get_length(tname)
-    index_name = catalog.get_column_with_index(tname)
-    where=record.delete_record(tname, clause, length)
-    index.delete_entries(where,tname,index_name)
+    clauses=[]
+    if len(condition) == 1 and condition[0] == '*':
+        record.delete_record(tname,clauses,catalog.get_length(tname))
+        for index_name in catalog.get_index_list(tname):
+            index.delete_table_index(tname,index_name)
+    else:
+        cnt = 0
+        tran = condition.split()
+        # print(tran)
+        while (1):
+            if cnt + 3 > len(tran):
+                raise Exception('The query condition is illegal')
+            if tran[cnt + 1] not in ['<', '>', '=', '<>', '>=', '<=']:
+                raise Exception('The operator ' + tran[cnt + 1] + ' in query is illegal')
+            if tran[cnt + 1] == '<>':
+                tran[cnt + 1] = '!='
+            if tran[cnt + 1] == '=':
+                tran[cnt + 1] = '=='
+            clauses.append([tran[cnt], tran[cnt + 1], tran[cnt + 2], catalog.get_type_of_attribute(tname, tran[cnt]),
+                            catalog.get_index_of_attribute(tname, tran[cnt])])
+            if cnt+3==len(tran):
+                indexname=catalog.get_column_with_index(tname)
+                res=record.delete_record(tname,clauses,catalog.get_length(clauses))
+                for cnt,i in enumerate(catalog.get_type_list(tname)):
+                    if i!='char':
+                        for j in res:
+                            j[cnt]=eval(j[cnt])
+                for attribute in catalog.get_column_with_index(tname):
+                    attr_id=catalog.get_index_of_attribute(tname,attribute)
+                    for indexname in catalog.get_index_name_by_seq(tname,attr_id):
+                        index.delete_entries([x[attr_id] for x in res],tname,indexname)
+                break
+            if tran[cnt + 3] != 'and':
+                raise Exception('and expected but ' + tran[cnt + 3] + ' found.')
+            cnt += 4
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """删除索引"""
 def drop_index(iname):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_index(iname,False)
@@ -110,9 +160,11 @@ def drop_index(iname):
     index.delete_index(iname)
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 """表的查询，返回查询结果"""
 def select(table,condition):
+    record.init()
     catalog.init_catalog()
     index.init_index()
     catalog.exist_table(table,False)
@@ -122,7 +174,7 @@ def select(table,condition):
     else:
         cnt = 0
         tran = condition.split()
-        print(tran)
+        #print(tran)
         while (1):
             if cnt + 3 > len(tran):
                 raise Exception('The query condition is illegal')
@@ -153,11 +205,15 @@ def select(table,condition):
             cnt += 4
     index.finalize_index()
     catalog.finalize()
+    record.finalize()
 
 def init_all():
+    record.init()
     catalog.init_catalog()
     index.init_index()
+
 
 def finalize_all():
     index.finalize_index()
     catalog.finalize()
+    record.finalize()

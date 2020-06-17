@@ -17,6 +17,7 @@ def insert(tablename,values):
 	encode = '1'#第一位用于之后的校验
 	for i in values:
 		encode += '{:\0<255}'.format(str(i))
+	#print('encode:',encode)
 	return myBuffer.save_block(tablename, encode)
 
 # 这个函数的作用是分割存入buffer中的code，返回结果为有效位（即insert中的那个“1”）和对应的属性
@@ -102,7 +103,7 @@ def delete_record(tablename, clauses,length):
 	where = []
 	while 1:
 		code = myBuffer.get_block(tablename,loc,length)
-		if code =='':
+		if code ==b'' or code==None:
 			break
 		valid, result = decrypt(code)
 		if valid:
@@ -119,3 +120,28 @@ def delete_record(tablename, clauses,length):
 				where.append(result)
 		loc += length
 	return where
+
+def create_index(tablename, id, type,length):
+	loc = 0
+	where = []
+	while 1:
+		code = myBuffer.get_block(tablename, loc, length).decode('utf-8')
+		if code == b'' or code == None:
+			break
+		valid, entry = decrypt(code)
+		if valid:
+			if type=='char':
+				where.append((loc,entry[id]))
+			else:
+				where.append((loc,eval(entry[id])))
+		loc += length
+	return where
+
+def truncate(tablename, where):
+	myBuffer.truncate(tablename, where)
+
+def init():
+	myBuffer.init()
+
+def finalize():
+	myBuffer.finalize()
