@@ -26,6 +26,8 @@ def extract_condition(condition):
 
 """创建table"""
 def create_table(name, attribute, PK):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_table(name,True)
     pidx=[x[0] for x in attribute].index(PK)
     if len(attribute[pidx]) != 5 or attribute[pidx][-1] != 1:
@@ -34,16 +36,24 @@ def create_table(name, attribute, PK):
     record.create_table(name)
     for x in attribute:
         if len(x)==5 and x[-1]==1:
-            index.create_table(name,x[0])
+            index.create_table(name, x[0])
+    index.finalize_index()
+    catalog.finalize()
 
 """创建索引"""
-def create_index(tname,iname,iattr):
+def create_index(tname, iname, iattr):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_index(iname,True)
     index.create_index(tname,iname,iattr)
-    catalog.create_index(tname,iname,iattr)
+    catalog.create_index(tname, iname, iattr)
+    index.finalize_index()
+    catalog.finalize()
 
 """插入新tuple"""
-def insert(tname,values):
+def insert(tname, values):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_table(tname,False)
     catalog.check_type(tname,values)
     index_name=catalog.get_column_with_index(tname)
@@ -52,39 +62,57 @@ def insert(tname,values):
     for dxtemp in idx:
         key.append(values[dxtemp])
     index.insert_entry(tname,index_name,key,values)
-    record.insert(tname,values)
+    record.insert(tname, values)
+    index.finalize_index()
+    catalog.finalize()
 
 """删除表"""
 def drop_table(tname):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_table(tname, False)
     index.delete_table(tname)
     catalog.delete_table(tname)
     record.delete_table(tname)
+    index.finalize_index()
+    catalog.finalize()
 
 """删除元组"""
-def delete_tuple(tname,condition):
+def delete_tuple(tname, condition):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_table(tname,False)
     clause=extract_condition(condition)
     length=catalog.get_length(tname)
     index_name = catalog.get_column_with_index(tname)
     where=record.delete_record(tname, clause, length)
-    index.delete_entries(where,tname,index_name)
+    index.delete_entries(where, tname, index_name)
+    index.finalize_index()
+    catalog.finalize()
 
 """删除索引"""
 def drop_index(iname):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_index(iname,False)
     catalog.delete_index(iname)
     index.delete_index(iname)
+    index.finalize_index()
+    catalog.finalize()
 
 """表的查询，返回查询结果"""
-def select(table,condition):
+def select(table, condition):
+    catalog.init_catalog()
+    index.init_index()
     catalog.exist_table(table,False)
     clause=extract_condition(condition)
     attr_list=catalog.get_column_name(table)
     length=catalog.get_length(table)
     index_name=catalog.get_column_with_index(table)
     where=index.select_from_table(table,clause,index_name)
-    record.select_record(table,attr_list,clause,where,length)
+    record.select_record(table, attr_list, clause, where, length)
+    index.finalize_index()
+    catalog.finalize()
 
 def init_all():
     catalog.init_catalog()

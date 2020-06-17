@@ -2,11 +2,12 @@ import os
 import math
 import json
 import catalog
-import sys
-import codecs
+import re
+#import sys
+#import codecs
 
 
-path = '../dbFile/Index/'
+path = './dbFile/Index/'
 fp = {} # store all the files(containg B+ tree json form)  according to the table_name and index_name, separating by '_'
 tree_root = {} # store all the tree_root nodes according to table_name and index_name, separating by '_'
 root = None # store the current tree_root node
@@ -330,22 +331,23 @@ def prtl(node):
 def init_index():
     file_list = os.listdir(path)
     for file in file_list:
-        fp[file.rstrip('.ind')] = open(path+file,'a+')
-        # fp[file.rstrip('.ind')] = codecs.getwriter("utf-8")(fp[file.rstrip('.ind')].detach())
-        fp[file.rstrip('.ind')].seek(0)
-        if fp[file.rstrip('.ind')].read()=="":  
-            fp[file.rstrip('.ind')].write('{"is_leaf":true,"sons":[],"keys":[]}')
-            fp[file.rstrip('.ind')].seek(0)
-        tree_root[file.rstrip('.ind')]=load_tree_from_json(json.loads(fp[file.rstrip('.ind')].read()))
+        name = file[:-4]
+        fp[name] = open(path+file,'a+')
+        #fp[file[:-4]] = codecs.getwriter("utf-8")(fp[file[:-4]].detach())
+        fp[name].seek(0)
+        #if fp[file[:-4]].read()=="":  
+            #fp[file[:-4]].write('{"is_leaf":true,"sons":[],"keys":[]}')
+            #fp[file[:-4]].seek(0)
+        tree_root[name]=load_tree_from_json(json.loads(fp[name].read()))
         global prev 
         prev = None
-        maintain_left_right_pointer(tree_root[file.rstrip('.ind')])
+        maintain_left_right_pointer(tree_root[name])
 
 # store all the trees back to json
 def finalize_index():
     file_list = os.listdir(path)
     for file in file_list:
-        name = file.rstrip('.ind') 
+        name = file[:-4]
         fp[name].seek(0)
         fp[name].truncate()
         fp[name].write(json.dumps(turn_tree_into_json(tree_root[name])))
@@ -372,7 +374,7 @@ def delete_index(index_name):
     file_list = os.listdir(path)
     for file in file_list:
         if index_name == file.split('_')[1]:
-            fp[file.rstrip('.ind')].close()
+            fp[file[:-4]].close()
             os.remove(path+file)
             return file.split('_')[0]
     raise Exception('No index named '+index_name+'!')

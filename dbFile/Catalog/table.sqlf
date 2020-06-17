@@ -1,1 +1,1 @@
-{}
+{"test": {"primary": 0, "columns": {"id": ["int", "0", ["id"], 1], "cname": ["char", "10", [], 1], "grade": ["int", "0", [], 0]}}}
