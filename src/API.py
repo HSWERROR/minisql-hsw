@@ -47,6 +47,7 @@ def create_table(name, attribute, PK):
         if len(x)==5 and x[-1]==1:
             #print(name,x[0])
             index.create_table(name,x[0])
+            catalog.create_index(name,x[0],x[0])
     index.finalize_index()
     catalog.finalize()
 

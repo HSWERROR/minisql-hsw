@@ -7,7 +7,7 @@ import re
 #import codecs
 
 
-path = './dbFile/Index/'
+path = '../dbFile/Index/'
 fp = {} # store all the files(containg B+ tree json form)  according to the table_name and index_name, separating by '_'
 tree_root = {} # store all the tree_root nodes according to table_name and index_name, separating by '_'
 root = None # store the current tree_root node

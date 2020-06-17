@@ -3,7 +3,7 @@ import os
 import index
 
 
-path = './dbFile/Catalog/'
+path = '../dbFile/Catalog/'
 
 fp = None
 tablelist = None
@@ -52,7 +52,6 @@ def create_table(tablename, attributes,primary):
     for x in attributes:
         m["columns"][x[0]]=x[1:]
     m['columns'][primary][-1] = 1
-    m['columns'][primary][-2].append(primary)
     tablelist[tablename]=m
 
 def delete_table(tablename):
