@@ -147,6 +147,7 @@ def select(table,condition):
                     indexname = catalog.get_index_name(table,index_clause[0])
                     res=index.select_from_table(table,index_clause,indexname[0])
                 record.select_record(table,catalog.get_column_name(table),clauses,res,catalog.get_length(table))
+                break
             if tran[cnt + 3] != 'and':
                 raise Exception('and expected but ' + tran[cnt + 3] + ' found.')
             cnt += 4

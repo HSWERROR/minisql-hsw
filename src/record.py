@@ -40,7 +40,7 @@ def select_record(tablename, columnname, clauses, where, length):
 		while 1:
             ##使用buffer模块中的函数从表中的指定位置读取对应的数据
 			code=myBuffer.get_block(tablename,loc,length)
-			if code=="":
+			if code==b'' or code==None:
 				break
 			loc += length
 			valid,result=decrypt(code)
