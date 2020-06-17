@@ -62,7 +62,7 @@ def insert(tname,values):
     for dex in index_name:
         idx=catalog.get_index_of_attribute(tname,dex)
         key.append(values[idx])
-    index.insert_entry(tname,index_name,key,values)
+        index.insert_entry(tname,dex,key,values)
     record.insert(tname,values)
     index.finalize_index()
     catalog.finalize()

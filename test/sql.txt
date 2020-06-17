@@ -1,2 +1,3 @@
 create table test(id int unique,cname char(10) unique,grade int,primary key(id));
 insert into test values(1,'JOJO',90);
+select * from test;

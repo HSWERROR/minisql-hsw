@@ -4,7 +4,7 @@ import collections
 
 buffer = collections.OrderedDict()
 buffer_size = 4096
-path = 'D:/miniSQL/dbfile/record/'
+path = './dbFile/Record/'
 
 def init():
     pass
@@ -19,7 +19,7 @@ def finalize():
                 fp.write(code)
 
 def save_block(tablename, code):
-    with open(path+tablename+'rec','rb+') as fp:
+    with open(path+tablename+'.rec','rb+') as fp:
         fp.read()
         if len(buffer) == buffer_size:
             buffer.popitem(last=False)
