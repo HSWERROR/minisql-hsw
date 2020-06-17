@@ -231,11 +231,13 @@ def Execfile(file_name):
 def main():
     start()
     SQL = ""
+    API.init_all()
     while 1:
         if "quit" in SQL:
             break
         SQL = Command()
         Translate(SQL)
+    API.finalize_all()
 
 
 if __name__ == '__main__':
