@@ -124,7 +124,9 @@ def Translate(SQL):
             table_name = SQL[start + 4:end].replace(" ", "")
             #print(table_name)
             # 在这里调用无where的选择函数（或在下面统一调用），
-            API.select(table_name, SQL)
+            s = SQL.find("select")
+            e = SQL.find("from")
+            API.select(table_name, SQL[s + 6:e].replace(" ", ""))
             # 可以传入的参数有table_name
         else:
             start = SQL.find("from")
