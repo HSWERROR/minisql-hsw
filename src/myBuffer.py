@@ -4,7 +4,7 @@ import collections
 
 buffer = collections.OrderedDict()
 buffer_size = 4096
-path = '../dbFile/Record/'
+path = './dbFile/Record/'
 
 def init():
     pass

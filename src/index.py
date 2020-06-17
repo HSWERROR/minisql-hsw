@@ -7,7 +7,7 @@ import re
 #import codecs
 
 
-path = '../dbFile/Index/'
+path = './dbFile/Index/'
 fp = {} # store all the files(containg B+ tree json form)  according to the table_name and index_name, separating by '_'
 tree_root = {} # store all the tree_root nodes according to table_name and index_name, separating by '_'
 root = None # store the current tree_root node
@@ -404,22 +404,22 @@ def insert_entry(table_name,index_name, key, data):
 
 # select nodes in a table according to where clauses
 def select_from_table(table_name, conditions, index_name):
-    res, value = [], eval(conditions[2])
+    res = []
     if conditions[1] == '!=':
-        res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), value)
+        res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), conditions[2])
     elif conditions[1] == '==':
         # a fake insert to find the node
-        res.append(insert(tree_root[table_name + '_' + index_name], eval(conditions[2]), None, False))
+        res.append(insert(tree_root[table_name + '_' + index_name], conditions[2], None, False))
     else:
         # find the leaf node in condition
-        break_block = find_leaf_place(tree_root[table_name+'_'+index_name],value)
+        break_block = find_leaf_place(tree_root[table_name+'_'+index_name],conditions[2])
         for index, key in enumerate(break_block.keys):
-            if eval('key' + conditions[1] + conditions[2]):
+            if eval( key + conditions[1] + conditions[2]):
                 res.append(break_block.sons[index])
         if '>' in conditions[1] and break_block.right != None:
-            res += get_data_list_right(break_block.right)
+            res += get_data_list_right(break_block.right,conditions[2])
         elif '<' in conditions[1] and break_block.left != None:
-            res += get_data_list_left(break_block.left)
+            res += get_data_list_left(break_block.left,conditions[2])
     return res
 
 # delete an index on a table

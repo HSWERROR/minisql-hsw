@@ -81,7 +81,7 @@ def insert(tname,values):
         if catalog.get_index_name_by_seq(tname,idx)!=[]:
             for indexname in catalog.get_index_name_by_seq(tname, idx):
                 try:
-                    index.insert_entry(tname,indexname,eval(key),where)
+                    index.insert_entry(tname,indexname,key,where)
                 except Exception as err:
                     temp_list=catalog.get_index_name_by_seq(tname,idx)
                     for index_del in temp_list[:temp_list.index(indexname)]:
