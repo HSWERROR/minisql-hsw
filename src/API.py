@@ -133,7 +133,7 @@ def delete_tuple(tname,condition):
                             catalog.get_index_of_attribute(tname, tran[cnt])])
             if cnt+3==len(tran):
                 indexname=catalog.get_column_with_index(tname)
-                res=record.delete_record(tname,clauses,catalog.get_length(clauses))
+                res=record.delete_record(tname,clauses,catalog.get_length(tname))
                 for cnt,i in enumerate(catalog.get_type_list(tname)):
                     if i!='char':
                         for j in res:

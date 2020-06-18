@@ -215,7 +215,6 @@ def help_example():
 
 
 def Execfile(file_name):
-    file_name += ".txt";
     if os.path.exists(file_name):
         f = open(file_name, 'r');
         command = ""

@@ -49,10 +49,10 @@ def select_record(tablename, columnname, clauses, where, length):
 				flag=True
 				for clause in clauses:
 					if clause[3]=='char':
-						if not eval('result[clause[-1]]'+clause[1]+clause[2]):
+						if not eval(result[clause[-1]]+clause[1]+clause[2]):
 							flag=False
 					else:
-						if not eval('result[clause[-1]]'+clause[1]+clause[2]):
+						if not eval(result[clause[-1]]+clause[1]+clause[2]):
 							flag=False
 				if flag==True:
 					results.append(result)
@@ -65,10 +65,10 @@ def select_record(tablename, columnname, clauses, where, length):
 				flag = True
 				for clause in clauses:
 					if clause[3]=='char':
-						if not eval('result[clause[-1]]'+clause[1]+clause[2]):
+						if not eval(result[clause[-1]]+clause[1]+clause[2]):
 							flag = False
 					else:
-						if not eval(str(eval('result[clause[-1]]'))+clause[1]+clause[2]):
+						if not eval(str(eval(result[clause[-1]]))+clause[1]+clause[2]):
 							flag = False
 				if flag:
 					results.append(result)          
@@ -110,10 +110,10 @@ def delete_record(tablename, clauses,length):
 			flag = True
 			for clause in clauses:
 				if clause[3]=='char':
-					if not eval('result[clause[-1]]'+clause[1]+clause[2]):
+					if not eval(result[clause[-1]]+clause[1]+clause[2]):
 						flag = False
 				else:
-					if not eval(str(eval('result[clause[-1]]'))+clause[1]+clause[2]):
+					if not eval(str(eval(result[clause[-1]]))+clause[1]+clause[2]):
 						flag = False
 			if flag:
 				myBuffer.change_valid_bit(tablename,loc)
@@ -126,7 +126,7 @@ def create_index(tablename, id, type,length):
 	where = []
 	while 1:
 		code = myBuffer.get_block(tablename, loc, length).decode('utf-8')
-		if code == b'' or code == None:
+		if code == b'' or code == None or code == '':
 			break
 		valid, entry = decrypt(code)
 		if valid:

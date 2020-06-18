@@ -373,7 +373,8 @@ def delete_table(table_name):
 def delete_index(index_name):
     file_list = os.listdir(path)
     for file in file_list:
-        if index_name == file.split('_')[1]:
+        name = file.split('_')[1][:-4]
+        if index_name == name:
             fp[file[:-4]].close()
             os.remove(path+file)
             return file.split('_')[0]
