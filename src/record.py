@@ -40,8 +40,8 @@ def select_record(tablename, columnname, clauses, where, length):
 		loc=0
 		while 1:
             ##使用buffer模块中的函数从表中的指定位置读取对应的数据
-			code=myBuffer.get_block(tablename,loc,length)
-			if code==b'' or code==None:
+			code=myBuffer.get_block(tablename,loc,length).decode('utf-8')
+			if code==b'' or code==None or code=="":
 				break
 			loc += length
 			valid,result=decrypt(code)
@@ -54,12 +54,12 @@ def select_record(tablename, columnname, clauses, where, length):
 					else:
 						if not eval('result[clause[-1]]'+clause[1]+clause[2]):
 							flag=False
-					if flag==True:
-						results.append(result)
+				if flag==True:
+					results.append(result)
 	else:
 		for loc in where:
             # 使用buffer模块中的函数从表中的指定位置读取对应的数据
-			code=myBuffer.get_block(tablename,loc,length)
+			code=myBuffer.get_block(tablename,loc,length).decode('utf-8')
 			valid, result = decrypt(code)
 			if valid==1:
 				flag = True
@@ -102,8 +102,8 @@ def delete_record(tablename, clauses,length):
 	loc = 0
 	where = []
 	while 1:
-		code = myBuffer.get_block(tablename,loc,length)
-		if code ==b'' or code==None:
+		code = myBuffer.get_block(tablename,loc,length).decode('utf-8')
+		if code ==b'' or code==None or code=="":
 			break
 		valid, result = decrypt(code)
 		if valid:
