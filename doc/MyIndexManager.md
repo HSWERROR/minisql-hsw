@@ -24,11 +24,11 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
 
 将一项插入b+树，is_insert为False时是伪插入，在做select等值查询操作的时候会被调用
 
-#### find_leaf_place(node,_key)
+#### find_leaf_place(node,value)
 
 找到插入项对应的叶子节点位置
 
-#### insert_into_leaf(node,_key,data,is_insert = True)
+#### insert_into_leaf(node,value,data,is_insert = True)
 
 向叶子节点插入
 
@@ -272,19 +272,19 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
 * 找到插入项对应的叶子节点位置：先向下找到叶节点层
 
     ```python
-    def find_leaf_place(node,_key):
-    	TmpNode = node
-    	while not TmpNode.is_leaf:
-    		flag = False
-    		for index, key in enumerate(TmpNode.keys):
-    			if key>_key:
-    				TmpNode = TmpNode.sons[index]
-    				flag = True
-    				break
-    		# if the given key is larger than any key, then in the last son	
-    		if flag == False:
-    			TmpNode = TmpNode.sons[-1]
-    	return TmpNode
+    def find_leaf_place(node,value):
+        TmpNode = node
+        while not TmpNode.is_leaf:
+            flag = False
+            for index, key in enumerate(TmpNode.keys):
+                if key>value:
+                    TmpNode = TmpNode.sons[index]
+                    flag = True
+                    break
+            # if the given key is larger than any key, then in the last son	
+            if flag == False:
+                TmpNode = TmpNode.sons[-1]
+        return TmpNode
     ```
 
 * 插入叶节点：
@@ -383,58 +383,57 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
 
     ```python
     def delete(node,key):
-    	cur_node = find_leaf_place(node,key)
-    	flag = True
-    	least = math.ceil((N - 1) / 2)  # the least length of a node
-    	for index,_key in enumerate(cur_node.keys):
-    		print('--->',key,_key)
-    		if key == _key:
-    			print('here',key,_key)
-    			flag = False
-    			cur_node.sons.pop(index)
-    			cur_node.keys.pop(index)
-    			break
-    	if flag: # can't find
-    		raise Exception('No point to delete')
+        cur_node = find_leaf_place(node,key)
+        flag = True
+        least = math.ceil((N-1)/2) # the least length of a node
+        for index,value in enumerate(cur_node.keys):
+            #print('--->',key,value)
+            if key == value:
+                #print('here',key,_key)
+                flag = False
+                cur_node.sons.pop(index)
+                cur_node.keys.pop(index)
+                break
+        if flag: # can't find
+            raise Exception('No point whose key named '+str(key)+' to delete!')
     
-    	# if the leaf node's length is shorter than "least"
-    	if cur_node.parent!=None and len(cur_node.keys)<least:
-    		if cur_node.parent.sons[0] == cur_node:
-    			# append node of the sibling to cur_node
-    			if len(cur_node.parent.sons[1].keys)>least:
-    				cur_node.sons.append(cur_node.parent.sons[1].sons.pop(0))
-    				cur_node.keys.append(cur_node.parent.sons[1].keys.pop(0))
-    				cur_node.parent.keys[0] = cur_node.parent.sons[1].keys[0]
-    			# merge the cur_node and the next sibling
-    			else:
-    				for i in range(len(cur_node.parent.sons[1].keys)):
-    					cur_node.sons.append(cur_node.parent.sons[1].sons[i])
-    					cur_node.keys.append(cur_node.parent.sons[1].keys[i])
-    				if cur_node.right.right!=None:
-    					cur_node.right.right.left = cur_node
-    				cur_node.right = cur_node.right.right
-    				delete_node(cur_node.parent, 0)
-    		# if the inappropriate node is not the first son, need to update parent
-    		else:
-    			id = get_id(cur_node.parent, cur_node) - 1
-    			# append the last node of the previous sibling to cur_node's first node
-    			if len(cur_node.parent.sons[id].keys)>least:
-    				cur_node.sons.insert(0,cur_node.parent.sons[id].sons.pop(-1))
-    				cur_node.keys.insert(0, cur_node.parent.sons[id].keys.pop(-1))
-    				# update the parent's key using cur_node's first node
-    				cur_node.parent.keys[id] = cur_node.keys[0]
-    			# merge the cur_node and its previous sibling
-    			else:
-    				for i in range(len(cur_node.keys)):
-    					cur_node.parent.sons[id].sons.append(cur_node.sons[i])
-    					cur_node.parent.sons[id].keys.append(cur_node.keys[i])
-    				if cur_node.right!=None:
-    					cur_node.right.left = cur_node.left
-    				cur_node.left.right = cur_node.right
-    				delete_node(cur_node.parent,id)
-    
+        # if the leaf node's length is shorter than "least"
+        if cur_node.parent!=None and len(cur_node.keys)<least:
+            if cur_node.parent.sons[0] == cur_node:
+                # append node of the sibling to cur_node
+                if len(cur_node.parent.sons[1].keys)>least:
+                    cur_node.sons.append(cur_node.parent.sons[1].sons.pop(0))
+                    cur_node.keys.append(cur_node.parent.sons[1].keys.pop(0))
+                    cur_node.parent.keys[0] = cur_node.parent.sons[1].keys[0]
+                # merge the cur_node and the next sibling
+                else:
+                    for i in range(len(cur_node.parent.sons[1].keys)):
+                        cur_node.sons.append(cur_node.parent.sons[1].sons[i])
+                        cur_node.keys.append(cur_node.parent.sons[1].keys[i])
+                    if cur_node.right.right!=None:
+                        cur_node.right.right.left = cur_node
+                    cur_node.right = cur_node.right.right
+                    delete_nonleaf_key(cur_node.parent, 0)
+            # if the inappropriate node is not the first son, need to update parent
+            else:
+                id = get_id(cur_node.parent, cur_node) - 1
+                # append the last node of the previous sibling to cur_node's first node
+                if len(cur_node.parent.sons[id].keys)>least:
+                    cur_node.sons.insert(0,cur_node.parent.sons[id].sons.pop(-1))
+                    cur_node.keys.insert(0, cur_node.parent.sons[id].keys.pop(-1))
+                    # update the parent's key using cur_node's first node
+                    cur_node.parent.keys[id] = cur_node.keys[0]
+                # merge the cur_node and its previous sibling
+                else:
+                    for i in range(len(cur_node.keys)):
+                        cur_node.parent.sons[id].sons.append(cur_node.sons[i])
+                        cur_node.parent.sons[id].keys.append(cur_node.keys[i])
+                    if cur_node.right!=None:
+                        cur_node.right.left = cur_node.left
+                    cur_node.left.right = cur_node.right
+                    delete_nonleaf_key(cur_node.parent,id)
     ```
-
+    
 * 删除非叶节点的键值，在节点合并过程中其父节点的键值需要递归地改变：
 
     * 如果节点删除键值之后长度达标，返回
@@ -444,55 +443,63 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
 
     ```python
     def delete_nonleaf_key(node, index):
-    	least = math.ceil((N-1)/2)
-    	node.keys.pop(index)
-    	node.sons.pop(index+1)
-    	if len(node.keys) >= least:
-    		return
-    	# if node is the root node
-    	if node.parent == None:
-    		# use the first son as the new root
-    		if len(node.keys)==0 and len(node.sons[0].keys)!=0:
-    			global root
-    			root = node.sons[0]
-    			node.sons[0].parent = None		
-    		return
-    	# next part is similar to delete the leaf node
-    	# if node is its parent's first son
-    	if node.parent.sons[0] == node:
-    		id = get_id(node.parent, node)
-    		# append node of the sibling to cur_node
-    		if len(node.parent.sons[1].keys) >least:
-    			node.keys.append(node.parent.keys[id])
-    			node.parent.keys[id] = node.parent.sons[1].keys.pop(0)
-    			node.sons.append(node.parent.sons[1].sons.pop(0))
-    			node.sons[-1].parent = node
-    		# merge
-    		else:
-    			node.keys.append(node.parent.keys[id])
-    			for i in range(len(node.parent.sons[1].keys)):
-    				node.keys.append((node.parent.sons[1].keys[i]))
-    				node.sons.append((node.parent.sons[1].sons[i]))
-    				node.sons[-1].parent = node
-    			node.right = node.right.right
-    			delete_nonleaf_key(node.parent, id)
-    	# if it isn't the first son, need to update parent_node
-    	else:
-    		id = get_id(node.parent, node) - 1
-    		if len(node.parent.sons[id].keys)>least:
-    			node.keys.insert(0,node.parent.keys[id])
-    			node.parent.keys[id] = node.parent.sons[id].keys.pop(-1)
-    			node.sons.insert(0,node.parent.sons[id].sons.pop(-1))
-    			node.sons[0].parent = node
-    		else:
-    			node.parent.sons[id].keys.append(node.parent.keys[id])
-    			for i in range(len(node.keys)):
-    				node.parent.sons[id].keys.append(node.keys[i])
-    				node.parent.sons[id].sons.append(node.sons[i])
-    			node.left.right = node.right
-    			delete_nonleaf_key(node.parent,id)
+        least = math.ceil((N)/2) - 1
+        node.keys.pop(index)
+        node.sons.pop(index+1)
+        if len(node.keys) >= least:
+            return
+        # if node is the root node
+        if node.parent == None:
+            # use the first son as the new root
+            if len(node.keys)==0 and len(node.sons[0].keys)!=0:
+                global root
+                root = node.sons[0]
+                node.sons[0].parent = None		
+            return
+        # next part is similar to delete the leaf node
+        # if node is its parent's first son
+        if node.parent.sons[0] == node:
+            id = get_id(node.parent, node)
+            # append node of the sibling to cur_node
+            if len(node.parent.sons[1].keys) >least:
+                node.keys.append(node.parent.keys[id])
+                node.parent.keys[id] = node.parent.sons[1].keys.pop(0)
+                node.sons.append(node.parent.sons[1].sons.pop(0))
+                node.sons[-1].parent = node
+            # merge
+            else:
+                node.keys.append(node.parent.keys[id])
+                for i in range(len(node.parent.sons[1].keys)):
+                    node.keys.append((node.parent.sons[1].keys[i]))
+                    node.sons.append((node.parent.sons[1].sons[i]))
+                    node.sons[-1].parent = node
+                node.sons.append((node.parent.sons[1].sons[-1]))
+                node.sons[-1].parent = node
+                if node.right.right!=None:
+                    node.right.right.left = node
+                node.right = node.right.right
+                delete_nonleaf_key(node.parent, id)
+        # if it isn't the first son, need to update parent_node
+        else:
+            id = get_id(node.parent, node) - 1
+            if len(node.parent.sons[id].keys)>least:
+                node.keys.insert(0,node.parent.keys[id])
+                node.parent.keys[id] = node.parent.sons[id].keys.pop(-1)
+                node.sons.insert(0,node.parent.sons[id].sons.pop(-1))
+                node.sons[0].parent = node
+            else:
+                node.parent.sons[id].keys.append(node.parent.keys[id])
+                for i in range(len(node.keys)):
+                    node.parent.sons[id].keys.append(node.keys[i])
+                node.parent.sons[id].sons.append(node.sons[i])
+                node.parent.sons[id].sons.append(node.sons[-1])
+                node.parent.sons[id].sons[-1].parent = node.parent.sons[id]
+                if node.right!=None:
+                    node.right.left = node.left
+                node.left.right = node.right
+                delete_nonleaf_key(node.parent,id)
     ```
-
+    
     
 
 ## 查找相关
@@ -504,24 +511,28 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
     * $</>$：找到对应叶节点，从左向右或从右向左读取数据
     
 ```python
-    def select_from_table(table_name, conditions, index_name):
-    	res, value = [], eval(conditions[2])
-    	if conditions[1] == '!=':
-    		res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), value)
-    	elif conditions[1] == '==':
-    		# a fake insert to find the node
-    		res.append(insert(tree_root[table_name + '_' + index_name], eval(conditions[2]), None, False))
-    	else:
-    		# find the leaf node in condition
-    		break_block = find_leaf_place(tree_root[table_name+'_'+index_name],value)
-    		for index, key in enumerate(break_block.keys):
-    			if eval('key' + conditions[1] + conditions[2]):
-    				res.append(break_block.sons[index])
-    		if '>' in conditions[1] and break_block.right != None:
-    			res += get_data_list_right(break_block.right)
-    		elif '<' in conditions[1] and break_block.left != None:
-    			res += get_data_list_left(break_block.left)
-    	return res
+def select_from_table(table_name, conditions, index_name):
+    res = []
+    if conditions[3] == 'char':
+        value = conditions[2]
+    else:
+        value = eval(conditions[2])
+    if conditions[1] == '!=':
+        res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), value)
+    elif conditions[1] == '==':
+        # a fake insert to find the node
+        res.append(insert(tree_root[table_name + '_' + index_name], value, None, False))
+    else:
+        # find the leaf node in condition
+        break_block = find_leaf_place(tree_root[table_name+'_'+index_name],value)
+        for index, key in enumerate(break_block.keys):
+            if eval( 'key' + conditions[1] + 'value'):
+                res.append(break_block.sons[index])
+        if '>' in conditions[1] and break_block.right != None:
+            res += get_data_list_right(break_block.right,value)
+        elif '<' in conditions[1] and break_block.left != None:
+            res += get_data_list_left(break_block.left,value)
+    return res
 ```
 
 
@@ -561,25 +572,25 @@ B+树中节点大小应与缓冲区的块大小相同，B+树的叉数由节点�
 
     ```python
     def check_unique(table_name, index_name, value):
-    	if table_name + '_' + index_name in tree_root.keys():
-    		check_root = tree_root[table_name + '_' + index_name]
-    		TmpNode = check_root
-    		while not TmpNode.is_leaf:
-    			flag = False
-    			for index, key in enumerate(TmpNode.keys):
-    				if key>value:
-    					TmpNode = TmpNode.sons[index]
-    					flag = True
-    					break
-    			# if the given key is larger than any key, then in the last son	
-    			if flag == False:
-    				TmpNode = TmpNode.sons[-1]
-    		for index,key in enumerate(TmpNode.keys):
-    			if key == value:
-    				raise Exception("Index Module : index '%s' does not satisfy "
-    									"unique constrains." % index_name)
-    	else:
-    		raise Exception("Index Module : index '%s' does not exists. " % index_name)
+        if table_name + '_' + index_name in tree_root.keys():
+            check_root = tree_root[table_name + '_' + index_name]
+            TmpNode = check_root
+            while not TmpNode.is_leaf:
+                flag = False
+                for index, key in enumerate(TmpNode.keys):
+                    if key>value:
+                        TmpNode = TmpNode.sons[index]
+                        flag = True
+                        break
+                # if the given key is larger than any key, then in the last son	
+                if flag == False:
+                    TmpNode = TmpNode.sons[-1]
+            for index,key in enumerate(TmpNode.keys):
+                if key == value:
+                    raise Exception("Index Module : index '%s' does not satisfy "
+                                        "unique constrains." % index_name)
+        else:
+            raise Exception("Index Module : index '%s' does not exists. " % index_name)
     ```
 
 * 从文件夹中读入所有json文件并将其转化为树形式
