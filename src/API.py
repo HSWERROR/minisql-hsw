@@ -33,6 +33,14 @@ import record
 
         cnt += 4"""
 
+#利用正则表达式给condition加空格，避免split错误
+def add_space(condition):
+    condition.replace('>=',' >= ').replace('<=',' <= ').replace('<>',' <> ')
+    condition = re.sub('<(?![=>])',' < ',condition)
+    condition = re.sub('(?<!<)>(?!=)',' > ',condition)
+    condition = re.sub('(?<![<>])=',' = ', condition)
+    return condition
+
 """创建table"""
 def create_table(name, attribute, PK):
     record.init()
@@ -117,6 +125,7 @@ def delete_tuple(tname,condition):
         for index_name in catalog.get_index_list(tname):
             index.delete_table_index(tname,index_name)
     else:
+        condition=add_space(condition)
         cnt = 0
         tran = condition.split()
         # print(tran)
@@ -172,6 +181,7 @@ def select(table,condition):
     if len(condition) == 1 and condition[0] == '*':
         record.select_record(table,catalog.get_column_name(table),clauses,None,catalog.get_length(table))
     else:
+        condition=add_space(condition)
         cnt = 0
         tran = condition.split()
         #print(tran)
