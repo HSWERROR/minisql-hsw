@@ -16,7 +16,7 @@ def Command():
         if ';' in command:
             break
         print("\t  ->", end="")
-        s = input().lower()
+        s = input()
         command = command + " " + s
     # print(command)
     return command
@@ -24,7 +24,7 @@ def Command():
 
 def Translate(SQL):
     if "help" in SQL:
-        help_example();
+        help_example()
     check = SQL.split()
     # print(check[0])
     if check[0] == "create":
@@ -56,14 +56,14 @@ def Translate(SQL):
                 Attribute_Value[i]=Attribute_Value[i].replace("(", " ").replace(")", "").split(" ")
                 Attribute_Value[i] = [x for x in Attribute_Value[i] if x != ""]
                 #print(Attribute_Value[i])
-                pos = -1;
+                pos = -1
                 int_number = Attribute_Value[i].count("int")
                 float_number = Attribute_Value[i].count("float")
                 #print(int_number,float_number)
                 if int_number == 1 :
                     Attribute_Value[i]=Attribute_Value[i]+["0"]
                 # print(Attribute_Value[i])
-                pos2 = -1;
+                pos2 = -1
                 if float_number == 1:
                     Attribute_Value[i]=Attribute_Value[i]+[0]
                 if "unique" not in Attribute_Value[i]:
@@ -179,6 +179,9 @@ def Translate(SQL):
         # print(file_name)
         Execfile(file_name)
 
+    else:
+        print("ERROR INPUT ! Please check again !")
+
 
 def help_example():
     print("Which opperation do you want to get help")
@@ -216,10 +219,10 @@ def help_example():
 
 def Execfile(file_name):
     if os.path.exists(file_name):
-        f = open(file_name, 'r');
+        f = open(file_name, 'r')
         command = ""
         for eachline in f:
-            command = command + eachline.lower().replace("\n", "").replace("\t", "");
+            command = command + eachline.replace("\n", "").replace("\t", "")
             if ";" in eachline:
                 Translate(command)
                 # print(command)

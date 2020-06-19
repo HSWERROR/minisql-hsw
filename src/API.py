@@ -35,7 +35,9 @@ import record
 
 #利用正则表达式给condition加空格，避免split错误
 def add_space(condition):
-    condition.replace('>=',' >= ').replace('<=',' <= ').replace('<>',' <> ')
+    condition = re.sub('<=',' <= ',condition)
+    condition = re.sub('>=', ' >= ', condition)
+    condition = re.sub('<>', ' <> ', condition)
     condition = re.sub('<(?![=>])',' < ',condition)
     condition = re.sub('(?<!<)>(?!=)',' > ',condition)
     condition = re.sub('(?<![<>])=',' = ', condition)

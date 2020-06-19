@@ -43,7 +43,13 @@ def create_table(tablename):
     p.close()
 
 def delete_table(tablename):
-    pass
+    to_del=[]
+    for name in buffer.keys():
+        table, where=re.split('\0', name)
+        if table==tablename:
+            to_del.append(name)
+    for item in to_del:
+        del buffer[item]
 
 def change_valid_bit(tablename, loc):
     with open(path+tablename+'.rec','rb+') as fp:
