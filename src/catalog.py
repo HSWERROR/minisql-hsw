@@ -137,7 +137,7 @@ def check_type(tablename,input_list):
             values.append(value)
         elif attribute[0]=='float':
             inp=str(inp)
-            if inp.isdigit()==False:
+            if isnumber(inp)==False:
                 raise Exception('The '+inp+' should be float type.')
             value = float(inp)
             values.append(value)
@@ -185,8 +185,13 @@ def exist_index(indexname,boolean):
                 flag=1
     if flag==0 and not boolean:
         raise Exception('No {} index exists.'.format(indexname))
-    
 
+def isnumber(aString):
+    try:
+        float(aString)
+        return True
+    except:
+        return False
 
 #init_catalog()
     ##exist_table("school1",True)
