@@ -1,0 +1,15 @@
+create table test (id int unique, name char(10) unique, grade int, primary key(id));
+insert into test values(1,'JOJO',90);
+create table float (id int unique, city char(10), population float, primary key(id));
+insert into test values(2,'Kate',98);
+insert into test values(3,'Nancy',70);
+insert into test values(4,'Hanser',88);
+create index namedex on test (name);
+select * from test;
+select * from test where grade>=90;
+delete from test where id=1;
+drop index namedex;
+delete  from test;
+select * from test;
+drop table test;
+insert into float values(1,'Hangzhou',50.8);
