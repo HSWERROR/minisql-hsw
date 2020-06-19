@@ -64,12 +64,12 @@ def turn_tree_into_json(j):
     return m
 
 # find the place of the corresponding leaf node
-def find_leaf_place(node,_key):
+def find_leaf_place(node,value):
     TmpNode = node
     while not TmpNode.is_leaf:
         flag = False
         for index, key in enumerate(TmpNode.keys):
-            if key>_key:
+            if key>value:
                 TmpNode = TmpNode.sons[index]
                 flag = True
                 break
@@ -80,22 +80,22 @@ def find_leaf_place(node,_key):
 
 
 # insert into leaf
-def insert_into_leaf(node,_key,data,is_insert = True):
+def insert_into_leaf(node,value,data,is_insert = True):
     for index,key in enumerate(node.keys):
-        if key == _key:
+        if key == value:
             if not is_insert:
                 return node.sons[index]
             else:
                 # primary key already exists
-                raise Exception('key named '+_key+' already exists!')
+                raise Exception('key named '+str(value)+' already exists!')
         # find the appropriate place
-        if is_insert and key>_key:
+        if is_insert and key>value:
             node.sons.insert(index,data) # insert(self, index: int, object: _T)
-            node.keys.insert(index,_key)
+            node.keys.insert(index,value)
             return None
     if is_insert: # the last place( _key > all the keys)
         node.sons.insert(len(node.sons),data) #new index:len(node.sons)
-        node.keys.insert(len(node.sons),_key)
+        node.keys.insert(len(node.sons),value)
         return None
 
 # update the parent when splits happen
@@ -181,7 +181,7 @@ def get_id(f_node, node):
 
 # delete the keys of a non-leaf node
 def delete_nonleaf_key(node, index):
-    least = math.ceil((N-1)/2)
+    least = math.ceil((N)/2) - 1
     node.keys.pop(index)
     node.sons.pop(index+1)
     if len(node.keys) >= least:
@@ -211,6 +211,10 @@ def delete_nonleaf_key(node, index):
                 node.keys.append((node.parent.sons[1].keys[i]))
                 node.sons.append((node.parent.sons[1].sons[i]))
                 node.sons[-1].parent = node
+            node.sons.append((node.parent.sons[1].sons[-1]))
+            node.sons[-1].parent = node
+            if node.right.right!=None:
+                node.right.right.left = node
             node.right = node.right.right
             delete_nonleaf_key(node.parent, id)
     # if it isn't the first son, need to update parent_node
@@ -226,6 +230,10 @@ def delete_nonleaf_key(node, index):
             for i in range(len(node.keys)):
                 node.parent.sons[id].keys.append(node.keys[i])
                 node.parent.sons[id].sons.append(node.sons[i])
+            node.parent.sons[id].sons.append(node.sons[-1])
+            node.parent.sons[id].sons[-1].parent = node.parent.sons[id]
+            if node.right!=None:
+                node.right.left = node.left
             node.left.right = node.right
             delete_nonleaf_key(node.parent,id)
 
@@ -235,17 +243,17 @@ def delete_nonleaf_key(node, index):
 def delete(node,key):
     cur_node = find_leaf_place(node,key)
     flag = True
-    least = math.ceil((N - 1) / 2)  # the least length of a node
-    for index,_key in enumerate(cur_node.keys):
-        #print('--->',key,_key)
-        if key == _key:
+    least = math.ceil((N-1)/2) # the least length of a node
+    for index,value in enumerate(cur_node.keys):
+        #print('--->',key,value)
+        if key == value:
             #print('here',key,_key)
             flag = False
             cur_node.sons.pop(index)
             cur_node.keys.pop(index)
             break
     if flag: # can't find
-        raise Exception('No point whose key named'+key+'to delete!')
+        raise Exception('No point whose key named '+str(key)+' to delete!')
 
     # if the leaf node's length is shorter than "least"
     if cur_node.parent!=None and len(cur_node.keys)<least:
