@@ -50,8 +50,8 @@ def change_valid_bit(tablename, loc):
         if tablename+'\0'+str(loc) not in buffer:
             buffer.popitem(last=False)
         lun=list(buffer[tablename+'\0'+str(loc)].decode('utf-8'))
-        lun[0] = '\0'
-        buffer[tablename+'\0'+str(loc)].join(lun).encode(encoding='UTF-8',errors='strict')
+        lun[0] = '0'
+        buffer[tablename+'\0'+str(loc)]=''.join(lun).encode(encoding='UTF-8',errors='strict')
         fp.seek(loc)
         fp.write('0'.encode(encoding='UTF-8',errors='strict'))
 
