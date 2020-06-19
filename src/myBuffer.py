@@ -24,7 +24,7 @@ def save_block(tablename, code):
         if len(buffer) == buffer_size:
             buffer.popitem(last=False)
         buffer[tablename+'\0'+str(fp.tell())] = code.encode(encoding='UTF-8',errors='strict')
-        print(buffer[tablename + '\0' + str(fp.tell())])
+        # print(buffer[tablename + '\0' + str(fp.tell())])
         fp.write(buffer[tablename+'\0'+str(fp.tell())])
         return fp.tell()
 

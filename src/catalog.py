@@ -146,7 +146,7 @@ def check_type(tablename,input_list):
                 raise Exception(name + ' has maximum length '+ str(attribute[1])+'.')
             values.append(inp)
         if attribute[3]==1:
-            index.check_unique(tablename,name,inp)
+            index.check_unique(tablename,name,value)
     return values
 
 def create_index(tablename, indexname, columnname):

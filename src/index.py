@@ -406,21 +406,25 @@ def insert_entry(table_name,index_name, key, data):
 # select nodes in a table according to where clauses
 def select_from_table(table_name, conditions, index_name):
     res = []
+    if conditions[3] == 'char':
+        value = conditions[2]
+    else:
+        value = eval(conditions[2])
     if conditions[1] == '!=':
-        res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), conditions[2])
+        res = get_data_list_right(get_leftest_child(tree_root[table_name + '_' + index_name]), value)
     elif conditions[1] == '==':
         # a fake insert to find the node
-        res.append(insert(tree_root[table_name + '_' + index_name], conditions[2], None, False))
+        res.append(insert(tree_root[table_name + '_' + index_name], value, None, False))
     else:
         # find the leaf node in condition
-        break_block = find_leaf_place(tree_root[table_name+'_'+index_name],conditions[2])
+        break_block = find_leaf_place(tree_root[table_name+'_'+index_name],value)
         for index, key in enumerate(break_block.keys):
-            if eval( key + conditions[1] + conditions[2]):
+            if eval( 'key' + conditions[1] + 'value'):
                 res.append(break_block.sons[index])
         if '>' in conditions[1] and break_block.right != None:
-            res += get_data_list_right(break_block.right,conditions[2])
+            res += get_data_list_right(break_block.right,value)
         elif '<' in conditions[1] and break_block.left != None:
-            res += get_data_list_left(break_block.left,conditions[2])
+            res += get_data_list_left(break_block.left,value)
     return res
 
 # delete an index on a table
@@ -437,7 +441,7 @@ def delete_entries(keylist, table_name, index_name):
         root = tree_root[table_name+'_'+index_name]
         delete(tree_root[table_name+'_'+index_name],key)
         tree_root[table_name+'_'+index_name] = root
-        prt(get_leftest_child(tree_root[table_name+'_'+index_name]))
+        #prt(get_leftest_child(tree_root[table_name+'_'+index_name]))
         #print('---------------------')
 
 # check if column with index satisfies unique constraint

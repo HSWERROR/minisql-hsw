@@ -146,7 +146,7 @@ def Translate(SQL):
         end = SQL.find(";")
         table_name = SQL[start + 5:mid].replace(" ", "")
         values = SQL[mid + 6:end].replace(" ", "").replace("'", "").replace("’", "").replace("‘", "").replace("(", "").replace(")", "").split(",")
-        print(table_name, values)
+        # print(table_name, values)
         # 在这里调用插入函数，
         API.insert(table_name,values)
         # 可以传入的参数有table_name,values
@@ -232,13 +232,13 @@ def Execfile(file_name):
 def main():
     start()
     SQL = ""
-    #API.init_all()
+    API.init_all()
     while 1:
         if "quit" in SQL:
             break
         SQL = Command()
         Translate(SQL)
-    #API.finalize_all()
+    API.finalize_all()
 
 
 if __name__ == '__main__':

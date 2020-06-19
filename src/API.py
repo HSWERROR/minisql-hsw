@@ -43,9 +43,9 @@ def add_space(condition):
 
 """创建table"""
 def create_table(name, attribute, PK):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_table(name,True)
     pidx=[x[0] for x in attribute].index(PK)
     if len(attribute[pidx]) != 5 or attribute[pidx][-1] != 1:
@@ -57,15 +57,15 @@ def create_table(name, attribute, PK):
             #print(name,x[0])
             index.create_table(name,x[0])
             catalog.create_index(name,x[0],x[0])
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """创建索引"""
 def create_index(tname,iname,iattr):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_index(iname,True)
     catalog.create_index(tname,iname,iattr)
     res=record.create_index(tname,catalog.get_index_of_attribute(tname,iattr),catalog.get_type_of_attribute(tname,iattr),catalog.get_length(tname))
@@ -73,17 +73,17 @@ def create_index(tname,iname,iattr):
         index.create_index(tname,iname,res)
     except Exception as e:
         raise Exception('Entries sharing same key on the column that is creating index on!')
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """插入新tuple"""
 def insert(tname,values):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_table(tname,False)
-    catalog.check_type(tname,values)
+    values = catalog.check_type(tname,values)
     where=record.insert(tname,values)-catalog.get_length(tname)
     for idx,key in enumerate(values):
         if catalog.get_index_name_by_seq(tname,idx)!=[]:
@@ -96,28 +96,28 @@ def insert(tname,values):
                         index.delete_entries([err],tname,index_del)
                     record.truncate(tname,where)
                     raise Exception('Insertion fails. Data with key: '+str(key)+' already exists.')
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """删除表"""
 def drop_table(tname):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_table(tname, False)
     index.delete_table(tname)
     catalog.delete_table(tname)
     record.delete_table(tname)
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """删除元组"""
 def delete_tuple(tname,condition):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_table(tname,False)
     clauses=[]
     if len(condition) == 1 and condition[0] == '*':
@@ -155,27 +155,27 @@ def delete_tuple(tname,condition):
             if tran[cnt + 3] != 'and':
                 raise Exception('and expected but ' + tran[cnt + 3] + ' found.')
             cnt += 4
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """删除索引"""
 def drop_index(iname):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_index(iname,False)
     catalog.delete_index(iname)
     index.delete_index(iname)
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 """表的查询，返回查询结果"""
 def select(table,condition):
-    record.init()
+    '''record.init()
     catalog.init_catalog()
-    index.init_index()
+    index.init_index()'''
     catalog.exist_table(table,False)
     clauses = []
     if len(condition) == 1 and condition[0] == '*':
@@ -213,9 +213,9 @@ def select(table,condition):
             if tran[cnt + 3] != 'and':
                 raise Exception('and expected but ' + tran[cnt + 3] + ' found.')
             cnt += 4
-    index.finalize_index()
+    '''index.finalize_index()
     catalog.finalize()
-    record.finalize()
+    record.finalize()'''
 
 def init_all():
     record.init()
