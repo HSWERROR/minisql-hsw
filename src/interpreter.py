@@ -11,7 +11,7 @@ def start():
 
 def Command():
     print("minisql>", end="")
-    command = input()
+    command = input().lower()
     while 1:
         if ';' in command:
             break
