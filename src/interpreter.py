@@ -11,7 +11,7 @@ def start():
 
 def Command():
     print("minisql>", end="")
-    command = input().lower()
+    command = input()
     while 1:
         if ';' in command:
             break
@@ -237,9 +237,9 @@ def main():
     SQL = ""
     API.init_all()
     while 1:
-        if "quit" in SQL:
-            break
         SQL = Command()
+        if "quit" in SQL:
+            sys.exit()
         Translate(SQL)
     API.finalize_all()
 
